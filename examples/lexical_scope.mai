@@ -1,0 +1,20 @@
+a = 5
+
+{
+ print "Scope 2 => 6"
+ a = 6
+ print a
+
+}
+
+{
+
+ print "Scope 3 => 8"
+
+ a = 8
+ print a
+
+}
+
+print "Scope 1 => 5"
+print a
