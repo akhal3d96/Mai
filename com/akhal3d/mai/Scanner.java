@@ -48,6 +48,7 @@ public class Scanner {
 			start = current;
 			scanToken();
 		}
+		// EDITED
 		addToken(TokenType.NEWLINE);
 		tokens.add(new Token(TokenType.EOF, "", null, line));
 		return tokens;

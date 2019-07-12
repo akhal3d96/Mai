@@ -10,6 +10,7 @@ import com.akhal3d.mai.Expr.Unary;
 import com.akhal3d.mai.Expr.Variable;
 import com.akhal3d.mai.Stmt.Block;
 import com.akhal3d.mai.Stmt.Expression;
+import com.akhal3d.mai.Stmt.If;
 import com.akhal3d.mai.Stmt.Print;
 //import com.akhal3d.mai.Stmt.Var;
 
@@ -182,6 +183,17 @@ public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 		} finally {
 			this.environment = previous;
 		}
+	}
+
+	@Override
+	public Object visitIfStmt(If stmt) {
+		if(isTruthy(evaluate(stmt.condition))) {
+			execute(stmt.thenBranch);
+		} else if(stmt.elseBranch != null) {
+			execute(stmt.elseBranch);
+		}
+		
+		return null;
 	}
 
 }

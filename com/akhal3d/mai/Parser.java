@@ -65,12 +65,29 @@ public class Parser {
 //	}
 
 	private Stmt statement() {
+		if (match(TokenType.IF))
+			return ifStatement();
 		if (match(TokenType.PRINT))
 			return printStatement();
+		// EDITED
 		if (match(TokenType.LEFT_BRACE) && match(TokenType.NEWLINE))
 			return new Stmt.Block(block());
 
 		return expressionStatement();
+	}
+
+	private Stmt ifStatement() {
+		consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+		Expr condition = expression();
+		consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+		
+		Stmt thenBranch = statement();
+		Stmt elseBranch = null;
+		if(match(TokenType.ELSE)) {
+		elseBranch = statement();
+		}
+		
+		return new Stmt.If(condition, thenBranch, elseBranch);
 	}
 
 	private List<Stmt> block() {
@@ -184,6 +201,13 @@ public class Parser {
 			consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
 			return new Expr.Grouping(expr);
 		}
+		
+		if(match(TokenType.NEWLINE)) {
+			retreat();
+			return new Expr.Empty();
+		}
+		
+		
 
 		throw error(peek(), "primary() " + "Expected expression");
 	}
@@ -235,6 +259,12 @@ public class Parser {
 	private Token advance() {
 		if (!isAtEnd())
 			current++;
+		return previous();
+	}
+	
+	private Token retreat() {
+		if (!isAtEnd())
+			current--;
 		return previous();
 	}
 
