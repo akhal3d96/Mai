@@ -3,12 +3,14 @@ package com.akhal3d.tool;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class GenerateAST {
 
 	public static void main(String[] args) {
 		defineAST("Expr", Arrays.asList("Binary   : Expr left, Token operator, Expr right",
 				  "Grouping : Expr expression",
-				  "Literal  : Object value", 
+				  "Literal  : Object value",
+				  "Logical	: Expr left, Token operator, Expr right",
 				  "Unary    : Token operator, Expr right",
 				  "Variable : Token name",
 				  "Assign   : Token name, Expr value"));
@@ -25,7 +27,7 @@ public class GenerateAST {
 		System.out.println("");
 
 		System.out.println("abstract class " + baseName + " {");
-
+		defineEmptyExpr();
 		defineVisitor(baseName, types);
 
 		for (String type : types) {
@@ -53,6 +55,15 @@ public class GenerateAST {
 
 		System.out.println("}");
 
+	}
+	
+	private static void defineEmptyExpr() {
+		System.out.println("static class Empty extends Expr {");
+		System.out.println("	<R> R accept(Visitor<R> visitor) {");
+		System.out.println("		return null;");
+		System.out.println("	}");
+
+		System.out.println("}");
 	}
 
 	private static void defineType(String baseName, String className, String fieldList) {
