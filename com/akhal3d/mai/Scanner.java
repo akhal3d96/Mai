@@ -144,7 +144,7 @@ public class Scanner {
 			} else if (isAlpha(c)) {
 				identifier();
 			} else {
-				Mai.error(line, "Scanner: " + "Unexpected character");
+				Mai.error(line, "Unexpected character");
 			}
 		}
 	}
@@ -203,7 +203,7 @@ public class Scanner {
 		}
 
 		if (isAtEnd()) {
-			Mai.error(line,"Scanner: string(): " + "Unterminated string");
+			Mai.error(line, "Unterminated string");
 			return;
 		}
 
