@@ -77,9 +77,9 @@ public class Parser {
 	}
 
 	private Stmt ifStatement() {
-		consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+		consume(TokenType.LEFT_PAREN, "Expect `(` after `if`.");
 		Expr condition = expression();
-		consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+		consume(TokenType.RIGHT_PAREN, "Expect `)` after `if`.");
 
 		Stmt thenBranch = statement();
 		Stmt elseBranch = null;
@@ -97,15 +97,15 @@ public class Parser {
 			statements.add(statement());
 		}
 
-		consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
-		consume(TokenType.NEWLINE, "Expect a new line '\n' after block.");
+		consume(TokenType.RIGHT_BRACE, "Expect `}` after block.");
+		consume(TokenType.NEWLINE, "Expect a new line after block.");
 		return statements;
 	}
 
 	private Stmt expressionStatement() {
 		Expr value = expression();
 		// EDITED
-		consume(TokenType.NEWLINE, "Expect ';' after value.");
+		consume(TokenType.NEWLINE, "Expect a new line after value.");
 
 		return new Stmt.Expression(value);
 	}
@@ -114,7 +114,7 @@ public class Parser {
 		/* the PRINT keyword is already consumed in the match() */
 		Expr value = expression();
 		// EDITED
-		consume(TokenType.NEWLINE, "Expect ';' after value.");
+		consume(TokenType.NEWLINE, "Expect a new line after value.");
 
 		return new Stmt.Print(value);
 	}
@@ -198,7 +198,7 @@ public class Parser {
 
 		if (match(TokenType.LEFT_PAREN)) {
 			Expr expr = expression();
-			consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
+			consume(TokenType.RIGHT_PAREN, "Expect `)` after expression.");
 			return new Expr.Grouping(expr);
 		}
 
@@ -207,17 +207,17 @@ public class Parser {
 			return new Expr.Empty();
 		}
 
-		throw error(peek(), "primary() " + "Expected expression");
+		throw error(peek(), "Expected expression");
 	}
 
 	private Token consume(TokenType type, String msg) {
 		if (check(type))
 			return advance();
-		throw error(peek(), "consume() " + msg);
+		throw error(peek(), msg);
 	}
 
 	private ParseError error(Token token, String msg) {
-		Mai.error(token, "Parser: " + msg);
+		Mai.error(token, msg);
 		return new ParseError();
 	}
 
