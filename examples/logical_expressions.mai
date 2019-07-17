@@ -1,0 +1,5 @@
+print false or "Strings are true"
+print nil or "Nil is false"
+
+print false and "This string won't be printed"
+print "And so this one" and false
