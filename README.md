@@ -8,8 +8,8 @@ Designed to be something between Go, Python and JavaScript.
 ## How to run
 So until there is a better building system (as if there's one) the easiest way to test the interpreter is by:
 ```
-# Clone the repo
-$ git clone
+# Clone the repo and change your directory to it
+$ git clone https://github.com/nemoload/Mai && cd Mai
 
 # Compile it
 $ javac com/akhal3d/mai/Mai.java
