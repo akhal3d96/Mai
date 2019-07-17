@@ -2,17 +2,19 @@ package com.akhal3d.mai;
 
 import java.util.List;
 
+import org.omg.CosNaming.IstringHelper;
+
 import com.akhal3d.mai.Expr.Assign;
 import com.akhal3d.mai.Expr.Binary;
 import com.akhal3d.mai.Expr.Grouping;
 import com.akhal3d.mai.Expr.Literal;
+import com.akhal3d.mai.Expr.Logical;
 import com.akhal3d.mai.Expr.Unary;
 import com.akhal3d.mai.Expr.Variable;
 import com.akhal3d.mai.Stmt.Block;
 import com.akhal3d.mai.Stmt.Expression;
 import com.akhal3d.mai.Stmt.If;
 import com.akhal3d.mai.Stmt.Print;
-//import com.akhal3d.mai.Stmt.Var;
 
 public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 
@@ -148,16 +150,6 @@ public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 		return environment.get(expr.name);
 	}
 
-//	@Override
-//	public Void visitVarStmt(Var stmt) {
-//		Object value = null;
-//		if (stmt.initializer != null) {
-//			value = evaluate(stmt.initializer);
-//		}
-//		environment.define(stmt.name.lexeme, value);
-//		return null;
-//	}
-
 	@Override
 	public Object visitAssignExpr(Assign expr) {
 		Object value = evaluate(expr.value);
@@ -194,6 +186,21 @@ public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 		}
 		
 		return null;
+	}
+
+	@Override
+	public Object visitLogicalExpr(Logical expr) {
+		
+		Object left = evaluate(expr.left);
+		if(expr.operator.type == TokenType.OR) {
+			if (isTruthy(left))
+				return left;
+		} else /* AND */ {
+			if (!isTruthy(left))
+				return left;
+		}
+		
+		return evaluate(expr.right);
 	}
 
 }

@@ -1,6 +1,14 @@
 package com.akhal3d.mai;
 
+import java.util.List;
+
 abstract class Expr {
+	static class Empty extends Expr {
+		<R> R accept(Visitor<R> visitor) {
+			return null;
+		}
+	}
+
 	interface Visitor<R> {
 		R visitBinaryExpr(Binary expr);
 
@@ -8,13 +16,13 @@ abstract class Expr {
 
 		R visitLiteralExpr(Literal expr);
 
+		R visitLogicalExpr(Logical expr);
+
 		R visitUnaryExpr(Unary expr);
 
 		R visitVariableExpr(Variable expr);
 
 		R visitAssignExpr(Assign expr);
-
-		R visitEmptyExpr();
 	}
 
 	static class Binary extends Expr {
@@ -57,6 +65,22 @@ abstract class Expr {
 		}
 	}
 
+	static class Logical extends Expr {
+		Logical(Expr left, Token operator, Expr right) {
+			this.left = left;
+			this.operator = operator;
+			this.right = right;
+		}
+
+		final Expr left;
+		final Token operator;
+		final Expr right;
+
+		<R> R accept(Visitor<R> visitor) {
+			return visitor.visitLogicalExpr(this);
+		}
+	}
+
 	static class Unary extends Expr {
 		Unary(Token operator, Expr right) {
 			this.operator = operator;
@@ -95,14 +119,6 @@ abstract class Expr {
 		<R> R accept(Visitor<R> visitor) {
 			return visitor.visitAssignExpr(this);
 		}
-	}
-
-	static class Empty extends Expr {
-
-		<R> R accept(Visitor<R> visitor) {
-			return null;
-		}
-
 	}
 
 	abstract <R> R accept(Visitor<R> visitor);

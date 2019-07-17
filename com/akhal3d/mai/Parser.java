@@ -22,7 +22,7 @@ public class Parser {
 	}
 
 	private Expr assignment() {
-		Expr expr = equality();
+		Expr expr = or();
 
 		if (match(TokenType.EQUAL)) {
 			Token equals = previous();
@@ -39,30 +39,30 @@ public class Parser {
 		return expr;
 	}
 
-//	private Stmt decleration() {
-//		try {
-//			if (match(TokenType.IDENTIFIER) && peek().type == TokenType.EQUAL)
-//				return varDecleration();
-//
-//			return statement();
-//
-//		} catch (ParseError error) {
-//			synchronize();
-//			return null;
-//		}
-//	}
-//
-//	private Stmt varDecleration() {
-//
-//		Token name = previous();
-//		Expr initializer = null;
-//		if (match(TokenType.EQUAL)) {
-//			initializer = expression();
-//		}
-//		//EDITED
-//		consume(TokenType.NEWLINE, "Expect ';' after variable declaration.");
-//		return new Stmt.Var(name, initializer);
-//	}
+	private Expr or() {
+		Expr expr = and();
+		
+		while(match(TokenType.OR)) {
+			Token operator = previous();
+			Expr right = and();
+			expr = new Expr.Logical(expr, operator, right);
+		}
+		
+		return expr;
+	}
+
+	private Expr and() {
+		Expr expr = equality();
+		
+		while(match(TokenType.AND)) {
+			Token operator = previous();
+			Expr right = and();
+			expr = new Expr.Logical(expr, operator, right);
+
+		}
+		
+		return expr;
+	}
 
 	private Stmt statement() {
 		if (match(TokenType.IF))
@@ -80,13 +80,13 @@ public class Parser {
 		consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
 		Expr condition = expression();
 		consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
-		
+
 		Stmt thenBranch = statement();
 		Stmt elseBranch = null;
-		if(match(TokenType.ELSE)) {
-		elseBranch = statement();
+		if (match(TokenType.ELSE)) {
+			elseBranch = statement();
 		}
-		
+
 		return new Stmt.If(condition, thenBranch, elseBranch);
 	}
 
@@ -201,13 +201,11 @@ public class Parser {
 			consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
 			return new Expr.Grouping(expr);
 		}
-		
-		if(match(TokenType.NEWLINE)) {
+
+		if (match(TokenType.NEWLINE)) {
 			retreat();
 			return new Expr.Empty();
 		}
-		
-		
 
 		throw error(peek(), "primary() " + "Expected expression");
 	}
@@ -261,7 +259,7 @@ public class Parser {
 			current++;
 		return previous();
 	}
-	
+
 	private Token retreat() {
 		if (!isAtEnd())
 			current--;
