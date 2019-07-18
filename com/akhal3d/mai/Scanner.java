@@ -124,9 +124,9 @@ public class Scanner {
 
 		case '\n':
 			//EDITED
-			if( !(peek() == '\n')) {
+//			if( !(peek() == '\n')) {
 				addToken(TokenType.NEWLINE);
-			}
+//			}
 			line++;
 			break;
 		
