@@ -3,12 +3,20 @@ package com.akhal3d.mai;
 import java.util.List;
 
 abstract class Stmt {
+	static class Empty extends Expr {
+		<R> R accept(Visitor<R> visitor) {
+			return null;
+		}
+	}
+
 	interface Visitor<R> {
 		R visitExpressionStmt(Expression stmt);
 
 		R visitPrintStmt(Print stmt);
 
 		R visitBlockStmt(Block stmt);
+
+		R visitWhileStmt(While stmt);
 
 		R visitIfStmt(If stmt);
 	}
@@ -46,6 +54,20 @@ abstract class Stmt {
 
 		<R> R accept(Visitor<R> visitor) {
 			return visitor.visitBlockStmt(this);
+		}
+	}
+
+	static class While extends Stmt {
+		While(Expr condition, Stmt body) {
+			this.condition = condition;
+			this.body = body;
+		}
+
+		final Expr condition;
+		final Stmt body;
+
+		<R> R accept(Visitor<R> visitor) {
+			return visitor.visitWhileStmt(this);
 		}
 	}
 
