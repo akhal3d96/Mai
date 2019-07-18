@@ -7,17 +7,18 @@ import java.util.List;
 public class GenerateAST {
 
 	public static void main(String[] args) {
-		defineAST("Expr", Arrays.asList("Binary   : Expr left, Token operator, Expr right",
-				  "Grouping : Expr expression",
-				  "Literal  : Object value",
-				  "Logical	: Expr left, Token operator, Expr right",
-				  "Unary    : Token operator, Expr right",
-				  "Variable : Token name",
-				  "Assign   : Token name, Expr value"));
-//		defineAST("Stmt", Arrays.asList("Expression : Expr expression",
-//										"Print      : Expr expression",
-//										"Block      :  List<Stmt> statements",
-//										"If			: Expr condition, Stmt thenBranch, Stmt elseBranch"));
+//		defineAST("Expr", Arrays.asList("Binary   : Expr left, Token operator, Expr right",
+//				  "Grouping : Expr expression",
+//				  "Literal  : Object value",
+//				  "Logical	: Expr left, Token operator, Expr right",
+//				  "Unary    : Token operator, Expr right",
+//				  "Variable : Token name",
+//				  "Assign   : Token name, Expr value"));
+		defineAST("Stmt", Arrays.asList("Expression : Expr expression",
+										"Print      : Expr expression",
+										"Block      : List<Stmt> statements",
+										"While		: Expr condition, Stmt body",
+										"If			: Expr condition, Stmt thenBranch, Stmt elseBranch"));
 	}
 
 	private static void defineAST(String baseName, List<String> types) {
