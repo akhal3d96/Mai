@@ -17,33 +17,29 @@ public class Environment {
 		this.enclosing = env;
 	}
 
-	private final Environment findEnv(String name, Object value) {
-		Environment env = this;
-		if (!this.values.containsKey(name) /* variable is not here */ &&
-				this.enclosing != null /* there's a another environment up in the chain */) {
-			
-			env = this.enclosing.findEnv(name, value);
+	private final Environment findEnv(String name, Environment env) {
+
+		if (env.values.containsKey(name)) {
+			return env;
+		} else if (env.enclosing != null) {
+			return findEnv(name, env.enclosing);
 		}
 
-		if (!this.values.containsKey(name)) {
-			/*
-			 * Assign to current environment return null
-			 */
-			return null;
-		}
-		return env;
+		return null;
 	}
 
-	public void define(String name, Object value) {
-//		Environment env = findEnv(name, value);
-//		if (env == null) {
-//			values.put(name, value);
-//
-//		} else {
-//			env.values.put(name, value);
-//		}
-		
-		values.put(name, value);
+	public void define(Token name, Object value) {
+
+		Environment env = findEnv(name.lexeme, this);
+		if (env == null) {
+			values.put(name.lexeme, value);
+
+		} else {
+			env.values.put(name.lexeme, value);
+			
+		}
+
+//		values.put(name, value);
 
 	}
 
