@@ -15,7 +15,6 @@ public class Parser {
 	List<Stmt> parse() {
 		List<Stmt> statements = new ArrayList<>();
 		while (!isAtEnd()) {
-
 			statements.add(statement());
 		}
 		return statements;
@@ -65,17 +64,22 @@ public class Parser {
 	}
 
 	private Stmt statement() {
-		if (match(TokenType.IF))
-			return ifStatement();
-		if (match(TokenType.PRINT))
-			return printStatement();
-		if (match(TokenType.WHILE))
-			return whileStatement();
-		// EDITED
-		if (match(TokenType.LEFT_BRACE) && match(TokenType.NEWLINE))
-			return new Stmt.Block(block());
+		try {
+			if (match(TokenType.IF))
+				return ifStatement();
+			if (match(TokenType.PRINT))
+				return printStatement();
+			if (match(TokenType.WHILE))
+				return whileStatement();
+			// EDITED
+			if (match(TokenType.LEFT_BRACE))
+				return new Stmt.Block(block());
 
-		return expressionStatement();
+			return expressionStatement();
+		} catch (ParseError e) {
+			synchronize();
+			return null;
+		}
 	}
 
 	private Stmt whileStatement() {
@@ -116,7 +120,8 @@ public class Parser {
 	private Stmt expressionStatement() {
 		Expr value = expression();
 		// EDITED
-		consume(TokenType.NEWLINE, "Expect a new line after value.");
+		if (peek().type == TokenType.NEWLINE)
+			consume(TokenType.NEWLINE, "Expect a new line after value.");
 
 		return new Stmt.Expression(value);
 	}
@@ -125,7 +130,8 @@ public class Parser {
 		/* the PRINT keyword is already consumed in the match() */
 		Expr value = expression();
 		// EDITED
-		consume(TokenType.NEWLINE, "Expect a new line after value.");
+		if (peek().type == TokenType.NEWLINE)
+			consume(TokenType.NEWLINE, "Expect a new line after value.");
 
 		return new Stmt.Print(value);
 	}
@@ -277,7 +283,7 @@ public class Parser {
 	}
 
 	private Token previous() {
-		if(current > 0)
+		if (current > 0)
 			return tokens.get(current - 1);
 		return null;
 	}
