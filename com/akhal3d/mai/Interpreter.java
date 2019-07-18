@@ -15,6 +15,7 @@ import com.akhal3d.mai.Stmt.Block;
 import com.akhal3d.mai.Stmt.Expression;
 import com.akhal3d.mai.Stmt.If;
 import com.akhal3d.mai.Stmt.Print;
+import com.akhal3d.mai.Stmt.While;
 
 public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 
@@ -154,7 +155,7 @@ public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 	public Object visitAssignExpr(Assign expr) {
 		Object value = evaluate(expr.value);
 
-		environment.define(expr.name.lexeme, value);
+		environment.define(expr.name, value);
 		return value;
 	}
 
@@ -164,10 +165,10 @@ public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 		return null;
 	}
 
-	private void executeBlock(List<Stmt> statements, Environment environment2) {
+	private void executeBlock(List<Stmt> statements, Environment environment) {
 		Environment previous = this.environment;
 		try {
-			this.environment = environment2;
+			this.environment = environment;
 
 			for (Stmt statement : statements) {
 				execute(statement);
@@ -201,6 +202,14 @@ public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 		}
 		
 		return evaluate(expr.right);
+	}
+
+	@Override
+	public Object visitWhileStmt(While stmt) {
+		while(isTruthy(evaluate(stmt.condition))) {
+			execute(stmt.body);
+		}
+		return null;
 	}
 
 }
