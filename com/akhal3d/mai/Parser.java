@@ -41,26 +41,26 @@ public class Parser {
 
 	private Expr or() {
 		Expr expr = and();
-		
-		while(match(TokenType.OR)) {
+
+		while (match(TokenType.OR)) {
 			Token operator = previous();
 			Expr right = and();
 			expr = new Expr.Logical(expr, operator, right);
 		}
-		
+
 		return expr;
 	}
 
 	private Expr and() {
 		Expr expr = equality();
-		
-		while(match(TokenType.AND)) {
+
+		while (match(TokenType.AND)) {
 			Token operator = previous();
 			Expr right = and();
 			expr = new Expr.Logical(expr, operator, right);
 
 		}
-		
+
 		return expr;
 	}
 
@@ -69,11 +69,22 @@ public class Parser {
 			return ifStatement();
 		if (match(TokenType.PRINT))
 			return printStatement();
+		if (match(TokenType.WHILE))
+			return whileStatement();
 		// EDITED
 		if (match(TokenType.LEFT_BRACE) && match(TokenType.NEWLINE))
 			return new Stmt.Block(block());
 
 		return expressionStatement();
+	}
+
+	private Stmt whileStatement() {
+		consume(TokenType.LEFT_PAREN, "Expect `(` after 'while'.");
+		Expr condition = expression();
+		consume(TokenType.RIGHT_PAREN, "Expect `)` after condition.");
+		Stmt body = statement();
+
+		return new Stmt.While(condition, body);
 	}
 
 	private Stmt ifStatement() {
@@ -231,7 +242,6 @@ public class Parser {
 			switch (peek().type) {
 			case CLASS:
 			case FUNC:
-			case VAR:
 			case FOR:
 			case IF:
 			case WHILE:
@@ -267,7 +277,9 @@ public class Parser {
 	}
 
 	private Token previous() {
-		return tokens.get(current - 1);
+		if(current > 0)
+			return tokens.get(current - 1);
+		return null;
 	}
 
 	private boolean check(TokenType type) {
