@@ -12,6 +12,7 @@ import com.akhal3d.mai.Expr.Logical;
 import com.akhal3d.mai.Expr.Unary;
 import com.akhal3d.mai.Expr.Variable;
 import com.akhal3d.mai.Stmt.Block;
+import com.akhal3d.mai.Stmt.Do;
 import com.akhal3d.mai.Stmt.Expression;
 import com.akhal3d.mai.Stmt.If;
 import com.akhal3d.mai.Stmt.Print;
@@ -180,35 +181,45 @@ public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 
 	@Override
 	public Object visitIfStmt(If stmt) {
-		if(isTruthy(evaluate(stmt.condition))) {
+		if (isTruthy(evaluate(stmt.condition))) {
 			execute(stmt.thenBranch);
-		} else if(stmt.elseBranch != null) {
+		} else if (stmt.elseBranch != null) {
 			execute(stmt.elseBranch);
 		}
-		
+
 		return null;
 	}
 
 	@Override
 	public Object visitLogicalExpr(Logical expr) {
-		
+
 		Object left = evaluate(expr.left);
-		if(expr.operator.type == TokenType.OR) {
+		if (expr.operator.type == TokenType.OR) {
 			if (isTruthy(left))
 				return left;
 		} else /* AND */ {
 			if (!isTruthy(left))
 				return left;
 		}
-		
+
 		return evaluate(expr.right);
 	}
 
 	@Override
 	public Object visitWhileStmt(While stmt) {
-		while(isTruthy(evaluate(stmt.condition))) {
+		while (isTruthy(evaluate(stmt.condition))) {
 			execute(stmt.body);
 		}
+		return null;
+	}
+
+	@Override
+	public Object visitDoStmt(Do stmt) {
+		execute(stmt.body);
+		while (isTruthy(evaluate(stmt.condition))) {
+			execute(stmt.body);
+		}
+		
 		return null;
 	}
 

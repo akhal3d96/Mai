@@ -18,6 +18,8 @@ abstract class Stmt {
 
 		R visitWhileStmt(While stmt);
 
+		R visitDoStmt(Do stmt);
+
 		R visitIfStmt(If stmt);
 	}
 
@@ -68,6 +70,20 @@ abstract class Stmt {
 
 		<R> R accept(Visitor<R> visitor) {
 			return visitor.visitWhileStmt(this);
+		}
+	}
+
+	static class Do extends Stmt {
+		Do(Stmt body, Expr condition) {
+			this.body = body;
+			this.condition = condition;
+		}
+
+		final Stmt body;
+		final Expr condition;
+
+		<R> R accept(Visitor<R> visitor) {
+			return visitor.visitDoStmt(this);
 		}
 	}
 

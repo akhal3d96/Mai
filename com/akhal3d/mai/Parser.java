@@ -71,6 +71,8 @@ public class Parser {
 				return printStatement();
 			if (match(TokenType.WHILE))
 				return whileStatement();
+			if(match(TokenType.DO))
+				return doStatement();
 			// EDITED
 			if (match(TokenType.LEFT_BRACE))
 				return new Stmt.Block(block());
@@ -80,6 +82,18 @@ public class Parser {
 			synchronize();
 			return null;
 		}
+	}
+
+	private Stmt doStatement() {
+		Stmt body = statement();
+		
+		consume(TokenType.WHILE, "Expected `while` after 'do'.");
+		
+		consume(TokenType.LEFT_PAREN, "Expect `(` after 'while'.");
+		Expr condition = expression();
+		consume(TokenType.RIGHT_PAREN, "Expect `)` after condition.");
+		
+		return new Stmt.Do(body,condition);
 	}
 
 	private Stmt whileStatement() {

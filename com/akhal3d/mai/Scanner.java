@@ -27,6 +27,7 @@ public class Scanner {
 		keywords.put("this", TokenType.THIS);
 		keywords.put("true", TokenType.TRUE);
 		keywords.put("while", TokenType.WHILE);
+		keywords.put("do", TokenType.DO);
 	}
 
 	/* Offset */

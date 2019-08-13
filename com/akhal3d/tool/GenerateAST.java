@@ -18,6 +18,7 @@ public class GenerateAST {
 										"Print      : Expr expression",
 										"Block      : List<Stmt> statements",
 										"While		: Expr condition, Stmt body",
+										"Do			: Stmt body, Expr condition",
 										"If			: Expr condition, Stmt thenBranch, Stmt elseBranch"));
 	}
 
