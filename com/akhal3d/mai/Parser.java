@@ -1,7 +1,10 @@
 package com.akhal3d.mai;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.akhal3d.mai.Expr.Literal;
 
 public class Parser {
 
@@ -71,9 +74,14 @@ public class Parser {
 				return printStatement();
 			if (match(TokenType.WHILE))
 				return whileStatement();
-			if(match(TokenType.DO))
+			if (match(TokenType.DO))
 				return doStatement();
-			// EDITED
+			if (match(TokenType.FOR))
+				return forStatement();
+			if(match(TokenType.BREAK))
+				return new Stmt.Break();
+			if(match(TokenType.PASS))
+				return new Stmt.Pass();
 			if (match(TokenType.LEFT_BRACE))
 				return new Stmt.Block(block());
 
@@ -84,16 +92,52 @@ public class Parser {
 		}
 	}
 
+	private Stmt forStatement() {
+		consume(TokenType.LEFT_PAREN, "Expect `(` after 'for'.");
+
+		Stmt initializer;
+		if (match(TokenType.SEMICOLON))
+			initializer = null;
+		else
+			initializer = expressionStatement();
+
+		Expr condition = null;
+		if (!check(TokenType.SEMICOLON))
+			condition = expression();
+		consume(TokenType.SEMICOLON, "Expect `;` after loop condition.");
+
+		Expr increment = null;
+		if (!check(TokenType.RIGHT_PAREN))
+			increment = expression();
+
+		consume(TokenType.RIGHT_PAREN, "Expect `)` after 'for'.");
+
+		Stmt body = statement();
+
+		if (increment != null)
+			body = new Stmt.Block(Arrays.asList(body, new Stmt.Expression(increment)));
+
+		if (condition == null)
+			condition = new Expr.Literal(true);
+
+		body = new Stmt.While(condition, body);
+
+		if (initializer != null)
+			body = new Stmt.Block(Arrays.asList(initializer, body));
+
+		return body;
+	}
+
 	private Stmt doStatement() {
 		Stmt body = statement();
-		
+
 		consume(TokenType.WHILE, "Expected `while` after 'do'.");
-		
+
 		consume(TokenType.LEFT_PAREN, "Expect `(` after 'while'.");
 		Expr condition = expression();
 		consume(TokenType.RIGHT_PAREN, "Expect `)` after condition.");
-		
-		return new Stmt.Do(body,condition);
+
+		return new Stmt.Do(body, condition);
 	}
 
 	private Stmt whileStatement() {
@@ -136,6 +180,8 @@ public class Parser {
 		// EDITED
 		if (peek().type == TokenType.NEWLINE)
 			consume(TokenType.NEWLINE, "Expect a new line after value.");
+		else if (peek().type == TokenType.SEMICOLON)
+			consume(TokenType.SEMICOLON, "Expect a semicolon `;` after value.");
 
 		return new Stmt.Expression(value);
 	}
@@ -191,10 +237,10 @@ public class Parser {
 	}
 
 	private Expr multiplication() {
-		Expr expr = unary(); // 5
+		Expr expr = unary();
 
 		while (match(TokenType.STAR, TokenType.SLASH)) {
-			Token operator = previous(); // *
+			Token operator = previous();
 			Expr right = unary();
 			expr = new Expr.Binary(expr, operator, right);
 		}

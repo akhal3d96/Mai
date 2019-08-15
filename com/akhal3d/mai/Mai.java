@@ -15,7 +15,9 @@ public class Mai {
 	private static boolean hadRuntimeError;
 
 	private static final Interpreter interpreter = new Interpreter();
-
+	/* TODO: 
+	 * 1. The error handle mechanism is horrendous and should be totally replaced 
+	 * 2. Remove the REPL code its unnecessary.*/
 	static void error(int line, String msg) {
 		report(line, "", msg);
 	}

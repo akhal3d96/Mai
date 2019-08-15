@@ -28,6 +28,8 @@ public class Scanner {
 		keywords.put("true", TokenType.TRUE);
 		keywords.put("while", TokenType.WHILE);
 		keywords.put("do", TokenType.DO);
+		keywords.put("break", TokenType.BREAK);
+		keywords.put("pass", TokenType.PASS);
 	}
 
 	/* Offset */
@@ -48,7 +50,6 @@ public class Scanner {
 			start = current;
 			scanToken();
 		}
-		// EDITED
 		addToken(TokenType.NEWLINE);
 		tokens.add(new Token(TokenType.EOF, "", null, line));
 		return tokens;
@@ -124,10 +125,7 @@ public class Scanner {
 			break;
 
 		case '\n':
-			//EDITED
-//			if( !(peek() == '\n')) {
 				addToken(TokenType.NEWLINE);
-//			}
 			line++;
 			break;
 		

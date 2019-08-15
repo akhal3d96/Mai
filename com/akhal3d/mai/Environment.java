@@ -29,7 +29,7 @@ public class Environment {
 	}
 
 	public void define(Token name, Object value) {
-
+		/* FIXME: Assignments should be mixed with declaration */
 		Environment env = findEnv(name.lexeme, this);
 		if (env == null) {
 			values.put(name.lexeme, value);
@@ -39,7 +39,7 @@ public class Environment {
 			
 		}
 
-//		values.put(name, value);
+//		values.put(name.lexeme, value); 
 
 	}
 

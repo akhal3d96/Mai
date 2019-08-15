@@ -21,6 +21,10 @@ abstract class Stmt {
 		R visitDoStmt(Do stmt);
 
 		R visitIfStmt(If stmt);
+		
+		R visitBreakStmt(Break stmt);
+		
+		R visitPassStmt(Pass stmt);
 	}
 
 	static class Expression extends Stmt {
@@ -101,6 +105,25 @@ abstract class Stmt {
 		<R> R accept(Visitor<R> visitor) {
 			return visitor.visitIfStmt(this);
 		}
+	}
+	
+	/* TODO: Add the Pass class and Break class to the generation script */
+	static class Pass extends Stmt {
+
+		@Override
+		<R> R accept(Visitor<R> visitor) {
+			return visitor.visitPassStmt(this);
+		}
+		
+	}
+	
+	static class Break extends Stmt {
+
+		@Override
+		<R> R accept(Visitor<R> visitor) {
+			return visitor.visitBreakStmt(this);
+		}
+		
 	}
 
 	abstract <R> R accept(Visitor<R> visitor);

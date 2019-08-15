@@ -2,25 +2,35 @@ package com.akhal3d.mai;
 
 import java.util.List;
 
-import org.omg.CosNaming.IstringHelper;
-
 import com.akhal3d.mai.Expr.Assign;
 import com.akhal3d.mai.Expr.Binary;
+import com.akhal3d.mai.Expr.Empty;
 import com.akhal3d.mai.Expr.Grouping;
 import com.akhal3d.mai.Expr.Literal;
 import com.akhal3d.mai.Expr.Logical;
 import com.akhal3d.mai.Expr.Unary;
 import com.akhal3d.mai.Expr.Variable;
 import com.akhal3d.mai.Stmt.Block;
+import com.akhal3d.mai.Stmt.Break;
 import com.akhal3d.mai.Stmt.Do;
 import com.akhal3d.mai.Stmt.Expression;
 import com.akhal3d.mai.Stmt.If;
+import com.akhal3d.mai.Stmt.Pass;
 import com.akhal3d.mai.Stmt.Print;
 import com.akhal3d.mai.Stmt.While;
 
+/* TODO:
+ * 1. There's a bug in the lexical scoping..have fun fixing it.....
+ * 2. Forbid break and pass from running outside loops.
+ * 3. Implement While..Do loop using only While loop like For loops.
+ * */
 public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 
 	private Environment environment = new Environment();
+
+	private boolean shouldBreakTheLoop = false;
+	private boolean shouldPassTheIteration = false;
+//	private boolean aLoopIsRunning = false;
 
 	public String interpret(List<Stmt> statements) {
 		try {
@@ -172,6 +182,22 @@ public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 			this.environment = environment;
 
 			for (Stmt statement : statements) {
+				/*
+				 * This is a hack, it should be replaced by a decent syntactical analysis before
+				 * evaluating the code. TODO: SYNTACTICAL ANALYSIS!
+				 */
+				if (this.shouldPassTheIteration) {
+					boolean isEmpty = false;
+					try {
+						isEmpty = ((Expression) statement).expression instanceof Empty;
+					} catch (ClassCastException e) {
+
+					}
+					if (!isEmpty) {
+						this.shouldPassTheIteration = false;
+						continue;
+					}
+				}
 				execute(statement);
 			}
 		} finally {
@@ -208,8 +234,14 @@ public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 	@Override
 	public Object visitWhileStmt(While stmt) {
 		while (isTruthy(evaluate(stmt.condition))) {
+//			this.aLoopIsRunning = true;
+			if (this.shouldBreakTheLoop)
+				break;
 			execute(stmt.body);
 		}
+
+		this.shouldBreakTheLoop = false;
+//		this.aLoopIsRunning = false;
 		return null;
 	}
 
@@ -219,7 +251,18 @@ public class Interpreter implements Stmt.Visitor<Object>, Expr.Visitor<Object> {
 		while (isTruthy(evaluate(stmt.condition))) {
 			execute(stmt.body);
 		}
-		
+		return null;
+	}
+
+	@Override
+	public Object visitBreakStmt(Break stmt) {
+		this.shouldBreakTheLoop = true;
+		return null;
+	}
+
+	@Override
+	public Object visitPassStmt(Pass stmt) {
+		this.shouldPassTheIteration = true;
 		return null;
 	}
 
